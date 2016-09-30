@@ -7,8 +7,19 @@
 //
 
 #import "DrawingScene.h"
-
+@interface DrawingScene ()
+@property BOOL hasInit;
+@end
 @implementation DrawingScene
+-(void)didMoveToView:(SKView *)view {
+    if(!self.hasInit) {
+        [self createContents];
+        self.hasInit=YES;
+    }
+}
+-(void)createContents {
+    
+}
 -(void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
     
 }
