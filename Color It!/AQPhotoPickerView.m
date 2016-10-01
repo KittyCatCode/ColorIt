@@ -7,7 +7,7 @@
 //
 
 #import "AQPhotoPickerView.h"
-
+#import "ViewController.h"
 
 @interface AQPhotoPickerViewOwner : NSObject
 @property (nonatomic, weak) IBOutlet AQPhotoPickerView *decoupledView;
@@ -30,11 +30,10 @@
 {
     // Instantiating encapsulated here.
     AQPhotoPickerViewOwner *owner = [AQPhotoPickerViewOwner new];
-    [[NSBundle mainBundle] loadNibNamed:NSStringFromClass(self) owner:owner options:nil];
+    UIAlertController* alert = [UIAlertController new]
     
     // Pass in a reference of the viewController.
     owner.decoupledView.delegateViewController = viewController;
-
     [viewController.view addSubview:owner.decoupledView];
 }
 

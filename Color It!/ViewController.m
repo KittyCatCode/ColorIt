@@ -28,9 +28,9 @@
 - (IBAction)save:(id)sender {
 }
 - (IBAction)noColor:(id)sender {
-    //self.drawing.dontDraw=(self.drawing.dontDraw?NO:YES);
-    //self.nocolor.tintColor=(self.drawing.dontDraw?[UIColor greenColor]:[UIColor blackColor]);
-    //self.nocolor.title=(self.drawing.dontDraw?@"Color":@"No Color");
+    self.scene.dontDraw=(self.scene.dontDraw?NO:YES);
+    self.nocolor.tintColor=(self.scene.dontDraw?[UIColor greenColor]:[UIColor blackColor]);
+    self.nocolor.title=(self.scene.dontDraw?@"Color":@"No Color");
 }
 - (IBAction)eraser:(id)sender {
     self.satSlider.value=0;
@@ -45,13 +45,12 @@
     self.sat.image=[ViewController imageWithColor:[UIColor colorWithHue:self.colorPicker.hue saturation:self.satSlider.value brightness:1 alpha:1]];
     self.brushSize=0.5f;
     [self updateBrushImage];
-    //magic from Kenshi on stackoverflow.
-    //self.drawing.brushSize=22;
-    //self.drawing.hue=0;
-    //self.drawing.sat=1;
+    self.scene.brushSize=22;
+    self.scene.hue=0;
+    self.scene.sat=1;
 }
 -(void)viewDidLayoutSubviews {
-    //self.drawing.brushSize=self.brushSlider.value*self.brush.frame.size.width;
+    self.scene.brushSize=self.brushSlider.value*self.brush.frame.size.width;
     if(self.hasInit)return;
     self.hasInit=YES;
     DrawingScene* scene = [[DrawingScene alloc] initWithSize:self.drawingView.frame.size];
