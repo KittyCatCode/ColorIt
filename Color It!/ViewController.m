@@ -11,16 +11,15 @@
 #import "DrawingScene.h"
 @interface ViewController ()
 @property CGFloat brushSize;
-@property CGFloat previousScale;
-@property CGPoint previousOffset;
-@property CGPoint previousLocation;
-@property CGPoint location;
+@property DrawingScene* scene;
+@property BOOL hasInit;
 @end
 @implementation ViewController
 - (IBAction)open:(id)sender {
     [AQPhotoPickerView presentInViewController:self];
 }
 -(void)photoFromImagePickerView:(UIImage *)photo {
+    //reset dialog
     //[self.drawing reset];
     //self.drawing.bg=photo;
 }
@@ -53,6 +52,14 @@
 }
 -(void)viewDidLayoutSubviews {
     //self.drawing.brushSize=self.brushSlider.value*self.brush.frame.size.width;
+    if(self.hasInit)return;
+    self.hasInit=YES;
+    DrawingScene* scene = [[DrawingScene alloc] initWithSize:self.drawingView.frame.size];
+    scene.c=self;
+    scene.scaleMode=SKSceneScaleModeResizeFill;
+    scene.bg=[UIImage imageNamed:@"cat-wallpaper-15.jpg"];
+    self.scene=scene;
+    [((SKView*)self.drawingView) presentScene:scene];
 }
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
@@ -87,11 +94,6 @@
     UIGraphicsEndImageContext();
     //Set brush image to image.
     self.brush.image=image;
-}
--(void)viewWillAppear:(BOOL)animated {
-    DrawingScene* scene = [[DrawingScene alloc] initWithSize:self.drawingView.frame.size];
-    scene.scaleMode=SKSceneScaleModeResizeFill;
-    [((SKView*)self.drawingView) presentScene:scene];
 }
 - (IBAction)resetDrawing:(id)sender {
     UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"Delete?" message:@"Are you sure you want to delete your drawing?" preferredStyle:UIAlertControllerStyleAlert];

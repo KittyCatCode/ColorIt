@@ -11,4 +11,9 @@
 #import "ViewController.h"
 @interface DrawingScene : SKScene
 @property ViewController* c;
+@property IBInspectable (getter=getBg,setter=setBg:) UIImage* bg;
+@property IBInspectable CGFloat hue;
+@property IBInspectable CGFloat sat;
+@property IBInspectable CGFloat brushSize;
+@property IBInspectable BOOL dontDraw;
 @end
