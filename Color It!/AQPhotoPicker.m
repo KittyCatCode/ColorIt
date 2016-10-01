@@ -6,40 +6,46 @@
 //  Copyright (c) 2014 MeeFree.com. All rights reserved.
 //
 
-#import "AQPhotoPickerView.h"
+#import "AQPhotoPicker.h"
 #import "ViewController.h"
 
-@interface AQPhotoPickerViewOwner : NSObject
-@property (nonatomic, weak) IBOutlet AQPhotoPickerView *decoupledView;
-@end
 
-@implementation AQPhotoPickerViewOwner
-@end
+@interface AQPhotoPicker ()
 
-
-@interface AQPhotoPickerView ()
-
-@property (nonatomic, weak) UIViewController <AQPhotoPickerViewDelegate> *delegateViewController;
+@property (nonatomic, weak) UIViewController <AQPhotoPickerDelegate> *delegateViewController;
 @property (nonatomic) UIImagePickerController *imagePickerController;
 
 @end
 
-@implementation AQPhotoPickerView
+@implementation AQPhotoPicker
 
-+(void)presentInViewController:(UIViewController<AQPhotoPickerViewDelegate>*) viewController
++(void)presentInViewController:(UIViewController<AQPhotoPickerDelegate>*) viewController
 {
     // Instantiating encapsulated here.
-    AQPhotoPickerViewOwner *owner = [AQPhotoPickerViewOwner new];
-    UIAlertController* alert = [UIAlertController new]
+    __block AQPhotoPicker *picker = [AQPhotoPicker new];
+    UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"Open Photo" message:@"Where would you like to open a photo?" preferredStyle:UIAlertControllerStyleActionSheet];
+    if([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
+        [alert addAction:[UIAlertAction actionWithTitle:@"Camera" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+            [picker takePhoto:nil];
+        }]];
+    }
+    [alert addAction:[UIAlertAction actionWithTitle:@"Photo Library" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        [picker selectPhoto:nil];
+    }]];
     
+    [alert addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
+        
+    }]];
     // Pass in a reference of the viewController.
-    owner.decoupledView.delegateViewController = viewController;
-    [viewController.view addSubview:owner.decoupledView];
+    picker.delegateViewController = viewController;
+    [viewController presentViewController:alert animated:YES completion:^{
+        
+    }];
 }
 
 #pragma mark - Image capture and picker methods
 
-- (IBAction)selectPhoto:(id)sender {
+- (void)selectPhoto:(id)sender {
     
     UIImagePickerController *picker = [[UIImagePickerController alloc] init];
     picker.delegate = self;
@@ -49,7 +55,7 @@
     [self.delegateViewController presentViewController:picker animated:YES completion:nil];
 }
 
-- (IBAction)takePhoto:(id)sender {
+- (void)takePhoto:(id)sender {
 
     if (![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
         UIAlertView* alert = [[UIAlertView alloc] initWithTitle:nil message:@"Test on real device, camera is not available in simulator" delegate:nil cancelButtonTitle:nil otherButtonTitles:@"OK", nil];
@@ -74,22 +80,13 @@
     UIImage *chosenImage = info[UIImagePickerControllerOriginalImage];
     [picker dismissViewControllerAnimated:YES completion:NULL];
     
-    [self removeFromSuperview];
-    [self.delegateViewController photoFromImagePickerView:chosenImage];
+    [self.delegateViewController photoFromImagePicker:chosenImage];
     
 }
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
     
     [picker dismissViewControllerAnimated:YES completion:NULL];
-    [self removeFromSuperview];
-}
-
-#pragma mark - Utility methods 
-
-- (IBAction)backgroundViewTapped:(id)sender {
-    
-    [self removeFromSuperview];
 }
 
 @end

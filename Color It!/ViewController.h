@@ -7,11 +7,11 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "AQPhotoPickerView.h"
+#import "AQPhotoPicker.h"
 #import <SpriteKit/SpriteKit.h>
 @class TwoPanScrollView;
 @class ColorPicker;
-@interface ViewController: UIViewController <AQPhotoPickerViewDelegate>
+@interface ViewController: UIViewController <AQPhotoPickerDelegate>
 @property (weak, nonatomic) IBOutlet UIImageView *hue;
 @property (weak, nonatomic) IBOutlet UIImageView *sat;
 @property (weak, nonatomic) IBOutlet UIImageView *brush;

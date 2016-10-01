@@ -16,9 +16,9 @@
 @end
 @implementation ViewController
 - (IBAction)open:(id)sender {
-    [AQPhotoPickerView presentInViewController:self];
+    [AQPhotoPicker presentInViewController:self];
 }
--(void)photoFromImagePickerView:(UIImage *)photo {
+-(void)photoFromImagePicker:(UIImage *)photo {
     //reset dialog
     //[self.drawing reset];
     //self.drawing.bg=photo;
