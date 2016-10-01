@@ -100,8 +100,14 @@
         CGFloat rotateBy=atan2(second.y-first.y,second.x-first.x)-atan2(self.initialPoint2.y-self.initialPoint1.y, self.initialPoint2.x-self.initialPoint1.x);
         self.all.zRotation+=rotateBy;
         //rotate position around currCenter
-        //get distance
-        
+        //get distance and rotation
+        CGFloat distance = [self floatByDistanceFrom:self.all.position and:currCenter];
+        CGPoint toAtan = [self pointBySubtractingPoints:currCenter from:self.all.position];
+        CGFloat rotation = atan2(toAtan.y,toAtan.x);
+        //add to rotation
+        rotation+=rotateBy;
+        //recalculate
+        self.all.position=[self pointByAddingPoints:currCenter and:[self pointByScalingPoint:CGPointMake(cos(rotation), sin(rotation)) by:distance]];
         self.initialPoint1=first;
         self.initialPoint2=second;
     }
