@@ -13,16 +13,19 @@
 @interface AQPhotoPicker ()
 
 @property (nonatomic, weak) UIViewController <AQPhotoPickerDelegate> *delegateViewController;
-@property (nonatomic) UIImagePickerController *imagePickerController;
-
+@property (strong) UIImagePickerController* picker;
 @end
 
 @implementation AQPhotoPicker
-
++(AQPhotoPicker*)getPhotoPicker {
+    static AQPhotoPicker* p=nil;
+    if(!p)p=[AQPhotoPicker new];
+    return p;
+}
 +(void)presentInViewController:(UIViewController<AQPhotoPickerDelegate>*) viewController
 {
     // Instantiating encapsulated here.
-    __block AQPhotoPicker *picker = [AQPhotoPicker new];
+    __block AQPhotoPicker *picker = [AQPhotoPicker getPhotoPicker];
     UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"Open Photo" message:@"Where would you like to open a photo?" preferredStyle:UIAlertControllerStyleActionSheet];
     if([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
         [alert addAction:[UIAlertAction actionWithTitle:@"Camera" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
@@ -51,7 +54,7 @@
     picker.delegate = self;
     //picker.allowsEditing = YES;
     picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
-    
+    self.picker=picker;
     [self.delegateViewController presentViewController:picker animated:YES completion:nil];
 }
 
@@ -67,25 +70,21 @@
     picker.delegate = self;
     //picker.allowsEditing = YES;
     picker.sourceType = UIImagePickerControllerSourceTypeCamera;
-    
+    self.picker=picker;
     [self.delegateViewController presentViewController:picker animated:YES completion:nil];
-    [self.imagePickerController takePicture];
+    [picker takePicture];
 }
 
 #pragma mark - UIImagePickerControllerDelegate
-
 // This method is called when an image has been chosen from the library or taken from the camera.
-- (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
-    
+- (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary<NSObject*,id>*)info {
     UIImage *chosenImage = info[UIImagePickerControllerOriginalImage];
     [picker dismissViewControllerAnimated:YES completion:NULL];
     
     [self.delegateViewController photoFromImagePicker:chosenImage];
     
 }
-
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
-    
     [picker dismissViewControllerAnimated:YES completion:NULL];
 }
 

@@ -16,4 +16,5 @@
 @property IBInspectable CGFloat sat;
 @property IBInspectable CGFloat brushSize;
 @property IBInspectable BOOL dontDraw;
+-(void)reset;
 @end

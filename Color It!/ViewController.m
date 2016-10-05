@@ -19,11 +19,18 @@
     [AQPhotoPicker presentInViewController:self];
 }
 -(void)photoFromImagePicker:(UIImage *)photo {
-    //reset dialog
-    //[self.drawing reset];
-    //self.drawing.bg=photo;
-}
-- (IBAction)reset:(id)sender {
+    UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"Delete?" message:@"You need to reset your current drawing before loading a new image." preferredStyle:UIAlertControllerStyleAlert];
+    [alert addAction:[UIAlertAction actionWithTitle:@"Yes" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * _Nonnull action) {
+        [self.scene reset];
+        self.scene.bg=photo;
+        //DBG remove later
+    }]];
+    [alert addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
+        
+    }]];
+    [self presentViewController:alert animated:YES completion:^{
+        
+    }];
 }
 - (IBAction)save:(id)sender {
 }
@@ -45,9 +52,6 @@
     self.sat.image=[ViewController imageWithColor:[UIColor colorWithHue:self.colorPicker.hue saturation:self.satSlider.value brightness:1 alpha:1]];
     self.brushSize=0.5f;
     [self updateBrushImage];
-    self.scene.brushSize=22;
-    self.scene.hue=0;
-    self.scene.sat=1;
 }
 -(void)viewDidLayoutSubviews {
     self.scene.brushSize=self.brushSlider.value*self.brush.frame.size.width;
@@ -57,6 +61,9 @@
     scene.c=self;
     scene.scaleMode=SKSceneScaleModeResizeFill;
     scene.bg=[UIImage imageNamed:@"cat-wallpaper-15.jpg"];
+    scene.brushSize=22;
+    scene.hue=0;
+    scene.sat=1;
     self.scene=scene;
     [((SKView*)self.drawingView) presentScene:scene];
 }
@@ -67,17 +74,17 @@
 
 - (IBAction)satValueChanged:(id)sender {
     self.sat.image=[ViewController imageWithColor:[UIColor colorWithHue:self.colorPicker.hue saturation:self.satSlider.value brightness:1 alpha:1]];
-    //self.drawing.sat=self.satSlider.value;
+    self.scene.sat=self.satSlider.value;
 }
 
 - (IBAction)brushValueChanged:(id)sender {
     [self updateBrushImage];
-    //self.drawing.brushSize=self.brushSlider.value*self.brush.frame.size.width;
+    self.scene.brushSize=self.brushSlider.value*self.brush.frame.size.width;
 }
 - (IBAction)colorValueChanged:(id)sender {
     self.hue.image=[ViewController imageWithColor:[UIColor colorWithHue:self.colorPicker.hue saturation:1 brightness:1 alpha:1]];
     self.sat.image=[ViewController imageWithColor:[UIColor colorWithHue:self.colorPicker.hue saturation:self.satSlider.value brightness:1 alpha:1]];
-    //self.drawing.hue=self.colorPicker.hue;
+    self.scene.hue=self.colorPicker.hue;
 }
 -(void)updateBrushImage {
     self.brushSize=self.brushSlider.value;
@@ -97,7 +104,7 @@
 - (IBAction)resetDrawing:(id)sender {
     UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"Delete?" message:@"Are you sure you want to delete your drawing?" preferredStyle:UIAlertControllerStyleAlert];
     [alert addAction:[UIAlertAction actionWithTitle:@"Yes" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * _Nonnull action) {
-        //[self.drawing reset];
+        [self.scene reset];
     }]];
     [alert addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
         
