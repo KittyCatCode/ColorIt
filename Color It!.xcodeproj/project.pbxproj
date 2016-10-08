@@ -32,6 +32,7 @@
 		C0CABD021D988A7B004D64A2 /* save@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C0CABD011D988A7B004D64A2 /* save@2x.png */; };
 		C0CABD041D988B2F004D64A2 /* clear.png in Resources */ = {isa = PBXBuildFile; fileRef = C0CABD031D988B2F004D64A2 /* clear.png */; };
 		C0CABD061D988B36004D64A2 /* clear@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C0CABD051D988B36004D64A2 /* clear@2x.png */; };
+		C0CF61BB1DA8B08200840266 /* IMG_0002.JPG in Resources */ = {isa = PBXBuildFile; fileRef = C0CF61BA1DA8B08200840266 /* IMG_0002.JPG */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -89,6 +90,7 @@
 		C0CABD011D988A7B004D64A2 /* save@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "save@2x.png"; sourceTree = "<group>"; };
 		C0CABD031D988B2F004D64A2 /* clear.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = clear.png; sourceTree = "<group>"; };
 		C0CABD051D988B36004D64A2 /* clear@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "clear@2x.png"; sourceTree = "<group>"; };
+		C0CF61BA1DA8B08200840266 /* IMG_0002.JPG */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = IMG_0002.JPG; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -158,6 +160,7 @@
 				C04516761D7B16F200D968D0 /* ViewController.m */,
 				C09DB03F1D9EAE7D00C79AF1 /* DrawingScene.h */,
 				C09DB0401D9EAE7D00C79AF1 /* DrawingScene.m */,
+				C0CF61BA1DA8B08200840266 /* IMG_0002.JPG */,
 				C09DB0421DA099AE00C79AF1 /* PathElement.h */,
 				C09DB0431DA099AE00C79AF1 /* PathElement.m */,
 				C04516781D7B16F300D968D0 /* Main.storyboard */,
@@ -314,6 +317,7 @@
 				C09DB03D1D9DB55500C79AF1 /* images.png in Resources */,
 				C09DB0381D9DB53D00C79AF1 /* camera.png in Resources */,
 				C0CABD061D988B36004D64A2 /* clear@2x.png in Resources */,
+				C0CF61BB1DA8B08200840266 /* IMG_0002.JPG in Resources */,
 				C045167A1D7B16F300D968D0 /* Main.storyboard in Resources */,
 				C06182131D8ADF5100BED9DC /* TransformationView.xib in Resources */,
 				C09DB0461DA09D2F00C79AF1 /* empty.png in Resources */,

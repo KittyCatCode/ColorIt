@@ -220,7 +220,7 @@
     
     // Draw image into current context, with specified rectangle
     // using previously defined context (with grayscale colorspace)
-    CGContextDrawImage(context, imageRect, [image CGImage]);
+    CGContextDrawImage(context, imageRect, image.CGImage);
     
     // Create bitmap image info from pixel data in current context
     CGImageRef imageRef = CGBitmapContextCreateImage(context);
@@ -253,17 +253,18 @@
 }
 -(void)setBg:(UIImage*)a {
     NSLog(@"%f,%f",a.size.width,a.size.height);
-    a=[self convertImageToGrayScale:a];
+    //a=[self convertImageToGrayScale:a];
     if(!self.hasInit){[self createContents];self.hasInit=YES;}
     [self.drawingSteps removeAllObjects];
     [self.bgNodeContainer removeAllChildren];
     [self.drawingContainer removeAllChildren];
-    SKSpriteNode* imageNode=[SKSpriteNode spriteNodeWithTexture:[SKTexture textureWithImage:a] size:a.size];
-    imageNode.blendMode=SKBlendModeMultiply;
+    SKTexture* txt = [SKTexture textureWithImage:a];
+    SKSpriteNode* imageNode=[SKSpriteNode spriteNodeWithTexture:txt size:CGSizeMake(100, 100)];
+    //imageNode.blendMode=SKBlendModeMultiply;
     [self.bgNodeContainer addChild:imageNode];
     UIGraphicsBeginImageContext(a.size);
     self.finalizedImage=UIGraphicsGetImageFromCurrentImageContext();
-    self.finalized.texture=[SKTexture textureWithImage:self.finalizedImage];
+    //self.finalized.texture=[SKTexture textureWithImage:self.finalizedImage];
     UIGraphicsEndImageContext();
     self.finalized.size=a.size;
     CGFloat scaleFitWidth=self.size.width/a.size.width;

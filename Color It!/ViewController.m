@@ -60,7 +60,7 @@
     DrawingScene* scene = [[DrawingScene alloc] initWithSize:self.drawingView.frame.size];
     scene.c=self;
     scene.scaleMode=SKSceneScaleModeResizeFill;
-    scene.bg=[UIImage imageNamed:@"cat-wallpaper-15.jpg"];
+    scene.bg=[UIImage imageNamed:@"IMG_0002.JPG"];
     scene.brushSize=22;
     scene.hue=0;
     scene.sat=1;
