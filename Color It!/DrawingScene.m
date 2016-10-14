@@ -8,12 +8,14 @@
 
 #import "DrawingScene.h"
 #import "PathElement.h"
+#import "HighQualitySpriteNode.h"
+#define SEGSIZE 50
 @interface DrawingScene ()
 @property BOOL hasInit;
 @property SKNode* bgNodeContainer;
 @property SKNode* finalizedDrawingContainer;
 @property SKNode* drawingContainer;
-@property SKSpriteNode* finalized;
+@property HighQualitySpriteNode* finalized;
 @property SKNode* all;
 @property NSMutableArray<UITouch*>* allTouches;
 @property CGPoint initialPoint1;
@@ -39,11 +41,15 @@
     self.bgNodeContainer=[SKNode new];
     self.finalizedDrawingContainer=[SKNode new];
     self.finalizedImage=[UIImage imageNamed:@"empty.png"];
-    self.finalized=[SKSpriteNode spriteNodeWithTexture:[SKTexture textureWithImage:self.finalizedImage] size:CGSizeZero];
+    self.finalized=[HighQualitySpriteNode newWithImage:self.finalizedImage segmentSize:SEGSIZE];
+    CGFloat w=self.size.width/self.finalized.calculateAccumulatedFrame.size.width;
+    CGFloat h=self.size.height/self.finalized.calculateAccumulatedFrame.size.height;
     if(self.size.width>self.size.height) {
-        self.finalized.size=CGSizeMake(self.size.width, self.size.width);
+        self.all.xScale*=w;
+        self.all.yScale*=w;
     } else {
-        self.finalized.size=CGSizeMake(self.size.height, self.size.height);
+        self.all.xScale*=h;
+        self.all.yScale*=h;
     }
     [self.finalizedDrawingContainer addChild:self.finalized];
     self.drawingContainer=[SKNode new];
@@ -94,6 +100,7 @@
 -(CGFloat)getRealBrushSize{
     return [self floatByDistanceFrom:[self.all convertPoint:CGPointZero fromNode:self] and:[self.all convertPoint:CGPointMake(0, 1) fromNode:self]]*self.brushSize;
 }
+//manana
 -(void)transitionFrom:(int)oldTouches to:(int)newTouches with:(NSArray<UITouch*>*)touches {
     if(oldTouches==1) {
         if(newTouches>1) {
@@ -101,37 +108,8 @@
             [self.drawingContainer removeAllChildren];
             [self.drawingSteps removeAllObjects];
         } else {
-            UIGraphicsBeginImageContext(self.finalizedImage.size);
-            [self.finalizedImage drawAtPoint:CGPointZero];
-            CGContextRef context = UIGraphicsGetCurrentContext();
-            CGMutablePathRef path = CGPathCreateMutable();
-            //Now draw the line.
-            __block CGPoint last;
-            __block BOOL started=NO;
-            [self.drawingSteps enumerateObjectsUsingBlock:^(PathElement * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-                obj.point=CGPointMake(obj.point.x+(0.5*self.finalizedImage.size.width), -obj.point.y+(0.5*self.finalizedImage.size.height));
-                if(!started) {
-                    CGPathMoveToPoint(path, NULL, obj.point.x, obj.point.y);
-                } else {
-                    CGPathAddLineToPoint(path, NULL, obj.point.x, obj.point.y);
-                }
-                last=obj.point;
-                started=YES;
-            }];
-            //CGPathCloseSubpath(path);
-            CGFloat bs = self.drawingSteps.firstObject.size;
-            CGContextSetLineWidth(context, bs);
-            CGContextAddPath(context, path);
-            [[UIColor colorWithHue:self.hue saturation:self.sat brightness:1 alpha:1] setStroke];
-            CGContextSetLineJoin(context, kCGLineJoinRound);
-            CGContextStrokePath(context);
-            [[UIColor colorWithHue:self.hue saturation:self.sat brightness:1 alpha:1] setFill];
-            CGContextFillEllipseInRect(context, CGRectMake(self.drawingSteps.firstObject.point.x-(bs/2), self.drawingSteps.firstObject.point.y-(bs/2), bs, bs));
-            CGContextFillEllipseInRect(context, CGRectMake(self.drawingSteps.lastObject.point.x-(bs/2), self.drawingSteps.lastObject.point.y-(bs/2), bs, bs));
-            self.finalizedImage=UIGraphicsGetImageFromCurrentImageContext();
-            self.finalized.texture=[SKTexture textureWithImage:self.finalizedImage];
-            CGPathRelease(path);
-            UIGraphicsEndImageContext();
+            //do drawing with highqualityspritenode
+            [self.finalized drawPath:self.drawingSteps];
             [self.drawingContainer removeAllChildren];
             [self.drawingSteps removeAllObjects];
         }
@@ -253,20 +231,18 @@
 }
 -(void)setBg:(UIImage*)a {
     NSLog(@"%f,%f",a.size.width,a.size.height);
-    //a=[self convertImageToGrayScale:a];
+    a=[self convertImageToGrayScale:a];
     if(!self.hasInit){[self createContents];self.hasInit=YES;}
     [self.drawingSteps removeAllObjects];
     [self.bgNodeContainer removeAllChildren];
     [self.drawingContainer removeAllChildren];
-    SKTexture* txt = [SKTexture textureWithImage:a];
-    SKSpriteNode* imageNode=[SKSpriteNode spriteNodeWithTexture:txt size:CGSizeMake(100, 100)];
-    //imageNode.blendMode=SKBlendModeMultiply;
+    HighQualitySpriteNode* imageNode=[HighQualitySpriteNode newWithImage:a segmentSize:1024];
+    imageNode.blendMode=SKBlendModeMultiply;
     [self.bgNodeContainer addChild:imageNode];
     UIGraphicsBeginImageContext(a.size);
     self.finalizedImage=UIGraphicsGetImageFromCurrentImageContext();
-    //self.finalized.texture=[SKTexture textureWithImage:self.finalizedImage];
+    self.finalized=[HighQualitySpriteNode newWithImage:self.finalizedImage segmentSize:SEGSIZE];
     UIGraphicsEndImageContext();
-    self.finalized.size=a.size;
     CGFloat scaleFitWidth=self.size.width/a.size.width;
     CGFloat scaleFitHeight=self.size.height/a.size.height;
     if(scaleFitWidth>scaleFitHeight) {
@@ -280,8 +256,8 @@
     self.all.zRotation=0;
 }
 -(void)reset {
-    UIGraphicsBeginImageContext(self.finalized.size);
-    self.finalized.texture=[SKTexture textureWithImage:UIGraphicsGetImageFromCurrentImageContext()];
+    UIGraphicsBeginImageContext(CGSizeMake(self.finalized.imageWidth, self.finalized.imageHeight));
+    self.finalized=[HighQualitySpriteNode newWithImage:UIGraphicsGetImageFromCurrentImageContext() segmentSize:SEGSIZE];
     UIGraphicsEndImageContext();
     [self.drawingContainer removeAllChildren];
 }

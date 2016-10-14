@@ -26,6 +26,7 @@
 		C09DB0411D9EAE7D00C79AF1 /* DrawingScene.m in Sources */ = {isa = PBXBuildFile; fileRef = C09DB0401D9EAE7D00C79AF1 /* DrawingScene.m */; };
 		C09DB0441DA099AE00C79AF1 /* PathElement.m in Sources */ = {isa = PBXBuildFile; fileRef = C09DB0431DA099AE00C79AF1 /* PathElement.m */; };
 		C09DB0461DA09D2F00C79AF1 /* empty.png in Resources */ = {isa = PBXBuildFile; fileRef = C09DB0451DA09D2F00C79AF1 /* empty.png */; };
+		C0B547AA1DAE83F000CD0510 /* HighQualitySpriteNode.m in Sources */ = {isa = PBXBuildFile; fileRef = C0B547A91DAE83F000CD0510 /* HighQualitySpriteNode.m */; };
 		C0CABCF81D98870C004D64A2 /* eraser.png in Resources */ = {isa = PBXBuildFile; fileRef = C0CABCF71D98870C004D64A2 /* eraser.png */; };
 		C0CABCFA1D988715004D64A2 /* eraser@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C0CABCF91D988715004D64A2 /* eraser@2x.png */; };
 		C0CABD001D988A73004D64A2 /* save.png in Resources */ = {isa = PBXBuildFile; fileRef = C0CABCFF1D988A73004D64A2 /* save.png */; };
@@ -84,6 +85,8 @@
 		C09DB0421DA099AE00C79AF1 /* PathElement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PathElement.h; sourceTree = "<group>"; };
 		C09DB0431DA099AE00C79AF1 /* PathElement.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PathElement.m; sourceTree = "<group>"; };
 		C09DB0451DA09D2F00C79AF1 /* empty.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = empty.png; sourceTree = "<group>"; };
+		C0B547A81DAE83F000CD0510 /* HighQualitySpriteNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HighQualitySpriteNode.h; sourceTree = "<group>"; };
+		C0B547A91DAE83F000CD0510 /* HighQualitySpriteNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HighQualitySpriteNode.m; sourceTree = "<group>"; };
 		C0CABCF71D98870C004D64A2 /* eraser.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = eraser.png; sourceTree = "<group>"; };
 		C0CABCF91D988715004D64A2 /* eraser@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "eraser@2x.png"; sourceTree = "<group>"; };
 		C0CABCFF1D988A73004D64A2 /* save.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = save.png; sourceTree = "<group>"; };
@@ -122,7 +125,6 @@
 			isa = PBXGroup;
 			children = (
 				C045166E1D7B16F200D968D0 /* Color It! */,
-				C04516931D7B16F400D968D0 /* Color It!UITests */,
 				C045166D1D7B16F200D968D0 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -172,6 +174,9 @@
 				C04516A31D7B1E5800D968D0 /* ColorPicker.m */,
 				C04516881D7B16F400D968D0 /* Color It!Tests */,
 				C06182121D8ADF5000BED9DC /* TransformationView.xib */,
+				C0B547A81DAE83F000CD0510 /* HighQualitySpriteNode.h */,
+				C0B547A91DAE83F000CD0510 /* HighQualitySpriteNode.m */,
+				C04516931D7B16F400D968D0 /* Color It!UITests */,
 			);
 			path = "Color It!";
 			sourceTree = "<group>";
@@ -200,7 +205,7 @@
 				C04516961D7B16F400D968D0 /* Info.plist */,
 			);
 			path = "Color It!UITests";
-			sourceTree = "<group>";
+			sourceTree = SOURCE_ROOT;
 		};
 /* End PBXGroup section */
 
@@ -349,6 +354,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C0B547AA1DAE83F000CD0510 /* HighQualitySpriteNode.m in Sources */,
 				C04516771D7B16F200D968D0 /* ViewController.m in Sources */,
 				C09DB0411D9EAE7D00C79AF1 /* DrawingScene.m in Sources */,
 				C09DB0351D9DB34800C79AF1 /* AQPhotoPicker.m in Sources */,
