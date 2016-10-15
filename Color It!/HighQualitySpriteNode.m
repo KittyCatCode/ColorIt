@@ -7,6 +7,7 @@
 //
 
 #import "HighQualitySpriteNode.h"
+#import "PathElement.h"
 @interface HighQualitySpriteNode ()
 @property NSMutableArray<UIImage*>* internalImages;
 @property int wid;
@@ -14,11 +15,13 @@
 @property int swid;
 @property int shei;
 @property long bm;
+@property int s;
 @property NSArray<SKSpriteNode*>* nodes;
 @end
 @implementation HighQualitySpriteNode
 +(instancetype)newWithImage:(UIImage *)im segmentSize:(int)s {
     HighQualitySpriteNode* ret = [self new];
+    ret.s=s;
     NSMutableArray<UIImage*>* images = [NSMutableArray new];
     ret.internalImages=images;
     ret.wid=im.size.width;
@@ -88,6 +91,7 @@
     return (radius*radius)>(xd*xd+yd*yd);
 }
 -(BOOL)doesPolygon:(NSArray<NSValue*>*)a intersectWith:(NSArray<NSValue*>*)b{//cgpoint value
+    if(!a||!b)return NO;
     __block BOOL shouldReturnFalse=false;
     [@[a,b] enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         NSArray<NSValue*>* polygon=obj;
@@ -124,13 +128,34 @@
     return !shouldReturnFalse;
 }
 -(void)drawPath:(NSArray<PathElement *> *)path {
-    
-    [path enumerateObjectsUsingBlock:^(PathElement * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+    __block PathElement* lastElement=nil;
+    [path enumerateObjectsUsingBlock:^(PathElement * _Nonnull ele, NSUInteger idx, BOOL * _Nonnull stop) {
         //<#gatos#>
+        CGFloat offX=(self.swid*self.s-self.wid)/2;
+        CGFloat offY=(self.shei*self.s-self.hei)/2;
         [self.nodes enumerateObjectsUsingBlock:^(SKSpriteNode * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             int x = idx%self.swid;
-            int y = idx/self.swid;
-            
+            int y = (int)idx/self.swid;
+            //convert pathelement to seg coords.
+            CGPoint last;
+            if(lastElement) {
+                last=CGPointMake(fmod(lastElement.point.x+offX,self.s),fmod(lastElement.point.y-offY,self.s));
+            }
+            CGPoint curr=CGPointMake(fmod(ele.point.x+offX,self.s),fmod(ele.point.y-offY,self.s));
+            NSArray<NSValue*>* segPoly =@[[NSValue valueWithCGPoint:CGPointMake(0, 0)],[NSValue valueWithCGPoint:CGPointMake(0, self.s)],[NSValue valueWithCGPoint:CGPointMake(self.s, self.s)],[NSValue valueWithCGPoint:CGPointMake(self.s,0)]];
+            NSArray<NSValue*>* linePoly = nil;
+            if(lastElement) {
+                //define linePoly
+                CGFloat a=ele.point.x-lastElement.point.x;
+                CGFloat b=ele.point.y-lastElement.point.y;
+                CGFloat xOff=(a/sqrt(a*a+b*b))*(ele.size/2);
+                CGFloat yOff=(b/sqrt(a*a+b*b))*(ele.size/2);
+                linePoly=@[[NSValue valueWithCGPoint:CGPointMake(lastElement.point.x-xOff, lastElement.point.y-yOff)],[NSValue valueWithCGPoint:CGPointMake(lastElement.point.x+xOff, lastElement.point.y+yOff)],[NSValue valueWithCGPoint:CGPointMake(ele.point.x+xOff, ele.point.y+yOff)],[NSValue valueWithCGPoint:CGPointMake(ele.point.x-xOff,ele.point.y-yOff)]];
+            }
+            if([self doesCircle:curr withRadius:ele.size intersectRect:CGRectMake(0, 0, self.s, self.s)]||[self doesPolygon:segPoly intersectWith:linePoly]) {
+                //draw
+            }
+            lastElement=ele;
         }];
     }];
 }
