@@ -87,13 +87,51 @@
     CGFloat yd = center.y-cp.y;
     return (radius*radius)>(xd*xd+yd*yd);
 }
--(BOOL)doesRect:(CGRect)r1 intersectRect:(CGRect)r2 {
-    return CGRectIntersectsRect(r1, r2);
+-(BOOL)doesPolygon:(NSArray<NSValue*>*)a intersectWith:(NSArray<NSValue*>*)b{//cgpoint value
+    __block BOOL shouldReturnFalse=false;
+    [@[a,b] enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        NSArray<NSValue*>* polygon=obj;
+        for (int i1 = 0; i1 < polygon.count; i1++)
+        {
+            int i2 = (i1 + 1) % polygon.count;
+            CGPoint p1 = polygon[i1].CGPointValue;
+            CGPoint p2 = polygon[i2].CGPointValue;
+            
+            CGPoint normal = CGPointMake(p2.y - p1.y, p1.x - p2.x);
+            
+            __block NSNumber* minA = nil;//cgfloat value
+            __block NSNumber* maxA = nil;//cgfloat value
+            [a enumerateObjectsUsingBlock:^(NSValue * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                CGFloat projected = normal.x * obj.CGPointValue.x + normal.y * obj.CGPointValue.y;
+                if (minA == nil || projected < minA.doubleValue)
+                    minA=[NSNumber numberWithDouble:projected];
+                if (maxA == nil || projected > maxA.doubleValue)
+                    maxA=[NSNumber numberWithDouble:projected];
+            }];
+            __block NSNumber* minB = nil;
+            __block NSNumber* maxB = nil;
+            [b enumerateObjectsUsingBlock:^(NSValue * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                double projected = normal.x * obj.CGPointValue.x + normal.y * obj.CGPointValue.y;
+                if (minB == nil || projected < minB.doubleValue)
+                    minB = [NSNumber numberWithDouble:projected];
+                if (maxB == nil || projected > maxB.doubleValue)
+                    maxB = [NSNumber numberWithDouble:projected];
+            }];
+            
+            shouldReturnFalse|=maxA.doubleValue < minB.doubleValue || maxB.doubleValue < minA.doubleValue;
+        }
+    }];
+    return !shouldReturnFalse;
 }
 -(void)drawPath:(NSArray<PathElement *> *)path {
+    
     [path enumerateObjectsUsingBlock:^(PathElement * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         //<#gatos#>
-        
+        [self.nodes enumerateObjectsUsingBlock:^(SKSpriteNode * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            int x = idx%self.swid;
+            int y = idx/self.swid;
+            
+        }];
     }];
 }
 @end
