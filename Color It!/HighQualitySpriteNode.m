@@ -127,15 +127,13 @@
     }];
     return !shouldReturnFalse;
 }
--(void)drawPath:(NSArray<PathElement *> *)path {
+-(void)drawPath:(NSArray<PathElement *> *)path withColor:(UIColor*)c {
     __block PathElement* lastElement=nil;
     [path enumerateObjectsUsingBlock:^(PathElement * _Nonnull ele, NSUInteger idx, BOOL * _Nonnull stop) {
         //<#gatos#>
         CGFloat offX=(self.swid*self.s-self.wid)/2;
         CGFloat offY=(self.shei*self.s-self.hei)/2;
         [self.nodes enumerateObjectsUsingBlock:^(SKSpriteNode * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-            int x = idx%self.swid;
-            int y = (int)idx/self.swid;
             //convert pathelement to seg coords.
             CGPoint last;
             if(lastElement) {
@@ -154,6 +152,18 @@
             }
             if([self doesCircle:curr withRadius:ele.size intersectRect:CGRectMake(0, 0, self.s, self.s)]||[self doesPolygon:segPoly intersectWith:linePoly]) {
                 //draw
+                UIGraphicsBeginImageContext(CGSizeMake(self.s, self.s));
+                [self.internalImages[idx] drawAtPoint:CGPointMake(0, 0)];
+                [c setFill];
+                [c setStroke];
+                CGContextRef context = UIGraphicsGetCurrentContext();
+                CGContextFillEllipseInRect(context, CGRectMake(ele.point.x-(ele.size/2), ele.point.y-(ele.size/2), ele.size, ele.size));
+                if(lastElement) {
+                    CGContextSetLineWidth(context, ele.size);
+                    CGContextStrokeLineSegments(context, (CGPoint[2]){lastElement.point,ele.point}, 2);
+                }
+                obj.texture=[SKTexture textureWithImage:UIGraphicsGetImageFromCurrentImageContext()];
+                UIGraphicsEndImageContext();
             }
             lastElement=ele;
         }];
