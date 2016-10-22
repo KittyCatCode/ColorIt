@@ -90,41 +90,42 @@
     CGFloat yd = center.y-cp.y;
     return (radius*radius)>(xd*xd+yd*yd);
 }
--(BOOL)doesPolygon:(NSArray<NSValue*>*)a intersectWith:(NSArray<NSValue*>*)b{//cgpoint value
+-(BOOL)doesPolygon:(CGPoint*)a withLen:(int)alen intersectWith:(CGPoint*)b withLen:(int)blen{//cgpoint value
     if(!a||!b)return NO;
     __block BOOL shouldReturnFalse=false;
-    [@[a,b] enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        NSArray<NSValue*>* polygon=obj;
-        for (int i1 = 0; i1 < polygon.count; i1++)
+    for(int i=0;i<2;i++){
+        CGPoint* polygon=(i==0?a:b);
+        int polypointcount=(i==0?alen:blen);
+        for (int i1 = 0; i1 < polypointcount; i1++)
         {
-            int i2 = (i1 + 1) % polygon.count;
-            CGPoint p1 = polygon[i1].CGPointValue;
-            CGPoint p2 = polygon[i2].CGPointValue;
+            int i2 = (i1 + 1) % polypointcount;
+            CGPoint p1 = polygon[i1];
+            CGPoint p2 = polygon[i2];
             
-            CGPoint normal = CGPointMake(p2.y - p1.y, p1.x - p2.x);
+            CGPoint normal = CGPointMake(p2.y - p1.y, p2.x - p1.x);
             
             __block NSNumber* minA = nil;//cgfloat value
             __block NSNumber* maxA = nil;//cgfloat value
-            [a enumerateObjectsUsingBlock:^(NSValue * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-                CGFloat projected = normal.x * obj.CGPointValue.x + normal.y * obj.CGPointValue.y;
+            for(int i=0;i<alen;i++) {
+                CGFloat projected = normal.x * a[i].x + normal.y * a[i].y;
                 if (minA == nil || projected < minA.doubleValue)
                     minA=[NSNumber numberWithDouble:projected];
                 if (maxA == nil || projected > maxA.doubleValue)
                     maxA=[NSNumber numberWithDouble:projected];
-            }];
+            }
             __block NSNumber* minB = nil;
             __block NSNumber* maxB = nil;
-            [b enumerateObjectsUsingBlock:^(NSValue * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-                double projected = normal.x * obj.CGPointValue.x + normal.y * obj.CGPointValue.y;
+            for(int i=0;i<blen;i++){
+                double projected = normal.x * b[i].x + normal.y * b[i].y;
                 if (minB == nil || projected < minB.doubleValue)
                     minB = [NSNumber numberWithDouble:projected];
                 if (maxB == nil || projected > maxB.doubleValue)
                     maxB = [NSNumber numberWithDouble:projected];
-            }];
+            }
             
             shouldReturnFalse|=maxA.doubleValue < minB.doubleValue || maxB.doubleValue < minA.doubleValue;
         }
-    }];
+    }
     return !shouldReturnFalse;
 }
 -(void)drawPath:(NSArray<PathElement *> *)path withColor:(UIColor*)c {
@@ -135,34 +136,38 @@
         CGFloat offY=(self.shei*self.s-self.hei)/2;
         [self.nodes enumerateObjectsUsingBlock:^(SKSpriteNode * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             //convert pathelement to seg coords.
-            CGPoint last;
+            CGPoint last=CGPointZero;
             if(lastElement) {
-                last=CGPointMake(fmod(lastElement.point.x+offX,self.s),fmod(lastElement.point.y-offY,self.s));
+                last=CGPointMake(((lastElement.point.x+(self.wid/2.0))+offX-(self.s*(idx%self.swid))),(((self.hei/2.0)-lastElement.point.y)-offY)-(self.s*(idx/self.swid)));
             }
-            CGPoint curr=CGPointMake(fmod(ele.point.x+offX,self.s),fmod(ele.point.y-offY,self.s));
-            NSArray<NSValue*>* segPoly =@[[NSValue valueWithCGPoint:CGPointMake(0, 0)],[NSValue valueWithCGPoint:CGPointMake(0, self.s)],[NSValue valueWithCGPoint:CGPointMake(self.s, self.s)],[NSValue valueWithCGPoint:CGPointMake(self.s,0)]];
-            NSArray<NSValue*>* linePoly = nil;
+            CGPoint curr=CGPointMake(((ele.point.x+(self.wid/2.0))+offX-(self.s*(idx%self.swid))),(((self.hei/2.0)-ele.point.y)-offY)-(self.s*(idx/self.swid)));
+            CGPoint* segPoly =(CGPoint[4]){CGPointMake(0, 0),CGPointMake(0, self.s),CGPointMake(self.s, self.s),CGPointMake(self.s,0)};
+            CGPoint* linePoly = nil;
             if(lastElement) {
                 //define linePoly
                 CGFloat a=ele.point.x-lastElement.point.x;
                 CGFloat b=ele.point.y-lastElement.point.y;
                 CGFloat xOff=(a/sqrt(a*a+b*b))*(ele.size/2);
                 CGFloat yOff=(b/sqrt(a*a+b*b))*(ele.size/2);
-                linePoly=@[[NSValue valueWithCGPoint:CGPointMake(lastElement.point.x-xOff, lastElement.point.y-yOff)],[NSValue valueWithCGPoint:CGPointMake(lastElement.point.x+xOff, lastElement.point.y+yOff)],[NSValue valueWithCGPoint:CGPointMake(ele.point.x+xOff, ele.point.y+yOff)],[NSValue valueWithCGPoint:CGPointMake(ele.point.x-xOff,ele.point.y-yOff)]];
+                linePoly=(CGPoint[4]){CGPointMake(last.x-xOff, last.y-yOff),CGPointMake(last.x+xOff, last.y+yOff),CGPointMake(curr.x+xOff, curr.y+yOff),CGPointMake(curr.x-xOff, curr.y-yOff)};
             }
-            if([self doesCircle:curr withRadius:ele.size intersectRect:CGRectMake(0, 0, self.s, self.s)]||[self doesPolygon:segPoly intersectWith:linePoly]) {
+            NSLog(@"%f,%f",curr.x,curr.y);
+            bool circ=[self doesCircle:curr withRadius:ele.size intersectRect:CGRectMake(0, 0, self.s, self.s)];
+            bool poly=[self doesPolygon:linePoly withLen:4 intersectWith:segPoly withLen:4];
+            if(circ||poly) {
                 //draw
                 UIGraphicsBeginImageContext(CGSizeMake(self.s, self.s));
                 [self.internalImages[idx] drawAtPoint:CGPointMake(0, 0)];
                 [c setFill];
                 [c setStroke];
                 CGContextRef context = UIGraphicsGetCurrentContext();
-                CGContextFillEllipseInRect(context, CGRectMake(ele.point.x-(ele.size/2), ele.point.y-(ele.size/2), ele.size, ele.size));
+                CGContextFillEllipseInRect(context, CGRectMake(curr.x-(ele.size/2), curr.y-(ele.size/2), ele.size, ele.size));
                 if(lastElement) {
                     CGContextSetLineWidth(context, ele.size);
-                    CGContextStrokeLineSegments(context, (CGPoint[2]){lastElement.point,ele.point}, 2);
+                    CGContextStrokeLineSegments(context, (CGPoint[2]){last,curr}, 2);
                 }
-                obj.texture=[SKTexture textureWithImage:UIGraphicsGetImageFromCurrentImageContext()];
+                self.internalImages[idx]=UIGraphicsGetImageFromCurrentImageContext();
+                obj.texture=[SKTexture textureWithImage:self.internalImages[idx]];
                 UIGraphicsEndImageContext();
             }
             lastElement=ele;

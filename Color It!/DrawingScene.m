@@ -9,7 +9,7 @@
 #import "DrawingScene.h"
 #import "PathElement.h"
 #import "HighQualitySpriteNode.h"
-#define SEGSIZE 50
+#define SEGSIZE 1024
 @interface DrawingScene ()
 @property BOOL hasInit;
 @property SKNode* bgNodeContainer;
@@ -100,7 +100,6 @@
 -(CGFloat)getRealBrushSize{
     return [self floatByDistanceFrom:[self.all convertPoint:CGPointZero fromNode:self] and:[self.all convertPoint:CGPointMake(0, 1) fromNode:self]]*self.brushSize;
 }
-//manana
 -(void)transitionFrom:(int)oldTouches to:(int)newTouches with:(NSArray<UITouch*>*)touches {
     if(oldTouches==1) {
         if(newTouches>1) {
@@ -109,7 +108,7 @@
             [self.drawingSteps removeAllObjects];
         } else {
             //do drawing with highqualityspritenode
-            [self.finalized drawPath:self.drawingSteps];
+            [self.finalized drawPath:self.drawingSteps withColor:[UIColor colorWithHue:self.hue saturation:self.sat brightness:1 alpha:1]];
             [self.drawingContainer removeAllChildren];
             [self.drawingSteps removeAllObjects];
         }
