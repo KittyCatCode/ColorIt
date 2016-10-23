@@ -108,7 +108,7 @@
             [self.drawingSteps removeAllObjects];
         } else {
             //do drawing with highqualityspritenode
-            [self.finalized drawPath:self.drawingSteps withColor:[UIColor colorWithHue:self.hue saturation:self.sat brightness:1 alpha:1] withAll:self.all];
+            self.hasBeenModified=YES;            [self.finalized drawPath:self.drawingSteps withColor:[UIColor colorWithHue:self.hue saturation:self.sat brightness:1 alpha:1] withAll:self.all];
             [self.drawingContainer removeAllChildren];
             [self.drawingSteps removeAllObjects];
         }
@@ -229,6 +229,7 @@
     return CGPointMake(a.x*b, a.y*b);
 }
 -(void)setBg:(UIImage*)a {
+    self.hasBeenModified=NO;
     NSLog(@"%f,%f",a.size.width,a.size.height);
     a=[self convertImageToGrayScale:a];
     if(!self.hasInit){[self createContents];self.hasInit=YES;}
@@ -237,6 +238,7 @@
     [self.drawingContainer removeAllChildren];
     [self.finalizedDrawingContainer removeAllChildren];
     HighQualitySpriteNode* imageNode=[HighQualitySpriteNode newWithImage:a segmentSize:1024];
+    imageNode.name=@"bg";
     imageNode.blendMode=SKBlendModeMultiply;
     [self.bgNodeContainer addChild:imageNode];
     UIGraphicsBeginImageContext(a.size);
@@ -266,6 +268,20 @@
     [NSException raise:NSInternalInconsistencyException
                               format:@"property is write-only"];
     return nil;
+}
+-(UIImage*)getFinishedImage {
+    HighQualitySpriteNode* bg = (HighQualitySpriteNode*)[self.bgNodeContainer childNodeWithName:@"bg"];
+    if(bg) {
+        UIGraphicsBeginImageContext(CGSizeMake(self.finalized.imageWidth,self.finalized.imageHeight));
+        [bg.recreateImage drawAtPoint:CGPointZero];
+        [self.finalized.recreateImage drawAtPoint:CGPointZero blendMode:kCGBlendModeMultiply alpha:1];
+        UIImage* toReturn = UIGraphicsGetImageFromCurrentImageContext();
+        UIGraphicsEndImageContext();
+        return toReturn;
+    } else {
+        return self.finalized.recreateImage;
+    }
+    
 }
 -(void)didChangeSize:(CGSize)oldSize {
     self.all.position=CGPointZero;

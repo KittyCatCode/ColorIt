@@ -16,5 +16,7 @@
 @property IBInspectable CGFloat sat;
 @property IBInspectable CGFloat brushSize;
 @property IBInspectable BOOL dontDraw;
+-(UIImage*)getFinishedImage;
+@property BOOL hasBeenModified;
 -(void)reset;
 @end

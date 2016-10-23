@@ -19,4 +19,5 @@
 -(int)getImageHeight;//check
 -(void)setImage:(UIImage*)i forX:(int)x andY:(int)y;
 -(void)drawPath:(NSArray<PathElement *> *)path withColor:(UIColor*)c withAll:(SKNode*)all;
+-(UIImage*)recreateImage;
 @end

@@ -13,26 +13,41 @@
 @property CGFloat brushSize;
 @property DrawingScene* scene;
 @property BOOL hasInit;
+@property UIActivityViewController* avc;
 @end
 @implementation ViewController
 - (IBAction)open:(id)sender {
     [AQPhotoPicker presentInViewController:self];
 }
 -(void)photoFromImagePicker:(UIImage *)photo {
-    UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"Delete?" message:@"You need to reset your current drawing before loading a new image." preferredStyle:UIAlertControllerStyleAlert];
-    [alert addAction:[UIAlertAction actionWithTitle:@"Yes" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * _Nonnull action) {
+    if(self.scene.hasBeenModified) {
+        UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"Delete?" message:@"You need to reset your current drawing before loading a new image." preferredStyle:UIAlertControllerStyleAlert];
+        [alert addAction:[UIAlertAction actionWithTitle:@"Yes" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * _Nonnull action) {
+            [self.scene reset];
+            self.scene.bg=photo;
+        }]];
+        [alert addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
+            
+        }]];
+        [self presentViewController:alert animated:YES completion:^{
+        
+        }];
+    } else {
         [self.scene reset];
         self.scene.bg=photo;
-        //DBG remove later
-    }]];
-    [alert addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
-        
-    }]];
-    [self presentViewController:alert animated:YES completion:^{
-        
-    }];
+    }
 }
 - (IBAction)save:(id)sender {
+    UIActivityViewController* share = [[UIActivityViewController alloc] initWithActivityItems:@[self.scene.getFinishedImage] applicationActivities:nil];
+    share.modalTransitionStyle=UIModalTransitionStyleCoverVertical;
+    [share setCompletionWithItemsHandler:^(UIActivityType activityType, BOOL completed, NSArray *returnedItems, NSError *activityError) {
+        [self.avc dismissViewControllerAnimated:YES completion:^{
+            if(activityType&&completed) {
+                self.scene.hasBeenModified=NO;
+            }
+        }];
+    }];
+    [self presentViewController:share animated:YES completion:nil];
 }
 - (IBAction)noColor:(id)sender {
     self.scene.dontDraw=(self.scene.dontDraw?NO:YES);
@@ -60,7 +75,6 @@
     DrawingScene* scene = [[DrawingScene alloc] initWithSize:self.drawingView.frame.size];
     scene.c=self;
     scene.scaleMode=SKSceneScaleModeResizeFill;
-    scene.bg=[UIImage imageNamed:@"IMG_0002.JPG"];
     scene.brushSize=22;
     scene.hue=0;
     scene.sat=1;

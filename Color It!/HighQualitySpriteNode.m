@@ -136,13 +136,18 @@
     __block CGFloat size;
     [self.nodes enumerateObjectsUsingBlock:^(SKSpriteNode * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop){
         cgPath=CGPathCreateMutable();
-        CGPathMoveToPoint(cgPath, NULL, 0, 0);
         [path enumerateObjectsUsingBlock:^(PathElement * _Nonnull ele, NSUInteger idx, BOOL * _Nonnull stop) {
             CGPoint inSegment=[obj convertPoint:ele.point fromNode:all];
-            CGPathAddLineToPoint(cgPath,NULL,inSegment.x,inSegment.y);
+            inSegment.x+=self.s/2.0;
+            inSegment.y-=self.s/2.0;
+            inSegment.y*=-1;
+            if(idx==0) {
+                CGPathMoveToPoint(cgPath, NULL, inSegment.x, inSegment.y);
+            } else {
+                CGPathAddLineToPoint(cgPath,NULL,inSegment.x,inSegment.y);
+            }
             size=ele.size;
         }];
-        CGPathCloseSubpath(cgPath);
         //draw
         UIGraphicsBeginImageContext(CGSizeMake(self.s, self.s));
         [self.internalImages[idx] drawAtPoint:CGPointMake(0, 0)];
@@ -152,11 +157,26 @@
         CGContextAddPath(context, cgPath);
         CGContextSetLineWidth(context, size);
         CGContextSetLineJoin(context, kCGLineJoinRound);
+        CGContextSetLineCap(context, kCGLineCapRound);
         CGContextStrokePath(context);
         self.internalImages[idx]=UIGraphicsGetImageFromCurrentImageContext();
         obj.texture=[SKTexture textureWithImage:self.internalImages[idx]];
         UIGraphicsEndImageContext();
         CGPathRelease(cgPath);
     }];
+}
+-(UIImage*)recreateImage {
+    CGFloat offX=(self.swid*self.s-self.wid)/2;
+    CGFloat offY=(self.shei*self.s-self.hei)/2;
+    UIGraphicsBeginImageContext(CGSizeMake(self.wid,self.hei));
+    [self.images enumerateObjectsUsingBlock:^(UIImage * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        int sx=idx%self.swid;
+        int sy=(int)(idx/self.swid);
+        CGPoint renderImageAt =  CGPointMake(sx*self.s-offX, sy*self.s-offY);
+        [obj drawAtPoint:renderImageAt];
+    }];
+    UIImage* toReturn=UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    return toReturn;
 }
 @end
