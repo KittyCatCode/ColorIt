@@ -35,6 +35,9 @@
     for(int y=0;y<heightInSegments;y++) {
         for(int x=0;x<widthInSegments;x++) {
             UIGraphicsBeginImageContext(CGSizeMake(s, s));
+            [[UIColor whiteColor] setFill];
+            CGContextRef c = UIGraphicsGetCurrentContext();
+            CGContextFillRect(c, CGRectMake(0, 0, s, s));
             [im drawAtPoint:CGPointMake((-x*s)+offX, (-y*s)+offY)];
             [images addObject:UIGraphicsGetImageFromCurrentImageContext()];
             UIGraphicsEndImageContext();
@@ -128,50 +131,32 @@
     }
     return !shouldReturnFalse;
 }
--(void)drawPath:(NSArray<PathElement *> *)path withColor:(UIColor*)c {
-    __block PathElement* lastElement=nil;
-    [path enumerateObjectsUsingBlock:^(PathElement * _Nonnull ele, NSUInteger idx, BOOL * _Nonnull stop) {
-        //<#gatos#>
-        CGFloat offX=(self.swid*self.s-self.wid)/2;
-        CGFloat offY=(self.shei*self.s-self.hei)/2;
-        [self.nodes enumerateObjectsUsingBlock:^(SKSpriteNode * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-            //convert pathelement to seg coords.
-            CGPoint last=CGPointZero;
-            if(lastElement) {
-                last=CGPointMake(((lastElement.point.x+(self.wid/2.0))+offX-(self.s*(idx%self.swid))),(((self.hei/2.0)-lastElement.point.y)-offY)-(self.s*(idx/self.swid)));
-            }
-            CGPoint curr=CGPointMake(((ele.point.x+(self.wid/2.0))+offX-(self.s*(idx%self.swid))),(((self.hei/2.0)-ele.point.y)-offY)-(self.s*(idx/self.swid)));
-            CGPoint* segPoly =(CGPoint[4]){CGPointMake(0, 0),CGPointMake(0, self.s),CGPointMake(self.s, self.s),CGPointMake(self.s,0)};
-            CGPoint* linePoly = nil;
-            if(lastElement) {
-                //define linePoly
-                CGFloat a=ele.point.x-lastElement.point.x;
-                CGFloat b=ele.point.y-lastElement.point.y;
-                CGFloat xOff=(a/sqrt(a*a+b*b))*(ele.size/2);
-                CGFloat yOff=(b/sqrt(a*a+b*b))*(ele.size/2);
-                linePoly=(CGPoint[4]){CGPointMake(last.x-xOff, last.y-yOff),CGPointMake(last.x+xOff, last.y+yOff),CGPointMake(curr.x+xOff, curr.y+yOff),CGPointMake(curr.x-xOff, curr.y-yOff)};
-            }
-            NSLog(@"%f,%f",curr.x,curr.y);
-            bool circ=[self doesCircle:curr withRadius:ele.size intersectRect:CGRectMake(0, 0, self.s, self.s)];
-            bool poly=[self doesPolygon:linePoly withLen:4 intersectWith:segPoly withLen:4];
-            if(circ||poly) {
-                //draw
-                UIGraphicsBeginImageContext(CGSizeMake(self.s, self.s));
-                [self.internalImages[idx] drawAtPoint:CGPointMake(0, 0)];
-                [c setFill];
-                [c setStroke];
-                CGContextRef context = UIGraphicsGetCurrentContext();
-                CGContextFillEllipseInRect(context, CGRectMake(curr.x-(ele.size/2), curr.y-(ele.size/2), ele.size, ele.size));
-                if(lastElement) {
-                    CGContextSetLineWidth(context, ele.size);
-                    CGContextStrokeLineSegments(context, (CGPoint[2]){last,curr}, 2);
-                }
-                self.internalImages[idx]=UIGraphicsGetImageFromCurrentImageContext();
-                obj.texture=[SKTexture textureWithImage:self.internalImages[idx]];
-                UIGraphicsEndImageContext();
-            }
-            lastElement=ele;
+-(void)drawPath:(NSArray<PathElement *> *)path withColor:(UIColor*)c withAll:(SKNode*)all {
+    __block CGMutablePathRef cgPath;
+    __block CGFloat size;
+    [self.nodes enumerateObjectsUsingBlock:^(SKSpriteNode * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop){
+        cgPath=CGPathCreateMutable();
+        CGPathMoveToPoint(cgPath, NULL, 0, 0);
+        [path enumerateObjectsUsingBlock:^(PathElement * _Nonnull ele, NSUInteger idx, BOOL * _Nonnull stop) {
+            CGPoint inSegment=[obj convertPoint:ele.point fromNode:all];
+            CGPathAddLineToPoint(cgPath,NULL,inSegment.x,inSegment.y);
+            size=ele.size;
         }];
+        CGPathCloseSubpath(cgPath);
+        //draw
+        UIGraphicsBeginImageContext(CGSizeMake(self.s, self.s));
+        [self.internalImages[idx] drawAtPoint:CGPointMake(0, 0)];
+        [c setFill];
+        [c setStroke];
+        CGContextRef context = UIGraphicsGetCurrentContext();
+        CGContextAddPath(context, cgPath);
+        CGContextSetLineWidth(context, size);
+        CGContextSetLineJoin(context, kCGLineJoinRound);
+        CGContextStrokePath(context);
+        self.internalImages[idx]=UIGraphicsGetImageFromCurrentImageContext();
+        obj.texture=[SKTexture textureWithImage:self.internalImages[idx]];
+        UIGraphicsEndImageContext();
+        CGPathRelease(cgPath);
     }];
 }
 @end

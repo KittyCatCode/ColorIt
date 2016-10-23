@@ -108,7 +108,7 @@
             [self.drawingSteps removeAllObjects];
         } else {
             //do drawing with highqualityspritenode
-            [self.finalized drawPath:self.drawingSteps withColor:[UIColor colorWithHue:self.hue saturation:self.sat brightness:1 alpha:1]];
+            [self.finalized drawPath:self.drawingSteps withColor:[UIColor colorWithHue:self.hue saturation:self.sat brightness:1 alpha:1] withAll:self.all];
             [self.drawingContainer removeAllChildren];
             [self.drawingSteps removeAllObjects];
         }
@@ -235,12 +235,14 @@
     [self.drawingSteps removeAllObjects];
     [self.bgNodeContainer removeAllChildren];
     [self.drawingContainer removeAllChildren];
+    [self.finalizedDrawingContainer removeAllChildren];
     HighQualitySpriteNode* imageNode=[HighQualitySpriteNode newWithImage:a segmentSize:1024];
     imageNode.blendMode=SKBlendModeMultiply;
     [self.bgNodeContainer addChild:imageNode];
     UIGraphicsBeginImageContext(a.size);
     self.finalizedImage=UIGraphicsGetImageFromCurrentImageContext();
     self.finalized=[HighQualitySpriteNode newWithImage:self.finalizedImage segmentSize:SEGSIZE];
+    [self.finalizedDrawingContainer addChild:self.finalized];
     UIGraphicsEndImageContext();
     CGFloat scaleFitWidth=self.size.width/a.size.width;
     CGFloat scaleFitHeight=self.size.height/a.size.height;
@@ -268,8 +270,8 @@
 -(void)didChangeSize:(CGSize)oldSize {
     self.all.position=CGPointZero;
     self.all.zRotation=0;
-    CGFloat scaleFitWidth=self.size.width/self.all.calculateAccumulatedFrame.size.width;
-    CGFloat scaleFitHeight=self.size.height/self.all.calculateAccumulatedFrame.size.height;
+    CGFloat scaleFitWidth=self.size.width/(self.finalizedImage.size.width*self.all.xScale);
+    CGFloat scaleFitHeight=self.size.height/(self.finalizedImage.size.height*self.all.yScale);
     if(scaleFitWidth>scaleFitHeight) {
         self.all.xScale*=scaleFitWidth;
         self.all.yScale*=scaleFitWidth;
