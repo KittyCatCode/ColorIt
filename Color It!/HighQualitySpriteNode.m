@@ -20,6 +20,7 @@
 @end
 @implementation HighQualitySpriteNode
 +(instancetype)newWithImage:(UIImage *)im segmentSize:(int)s {
+    im=[HighQualitySpriteNode rotateCameraImageToProperOrientation:im];
     HighQualitySpriteNode* ret = [self new];
     ret.s=s;
     NSMutableArray<UIImage*>* images = [NSMutableArray new];
@@ -52,6 +53,93 @@
     }];
     ret.nodes=nodes;
     return ret;
+}
++(UIImage*)rotateCameraImageToProperOrientation:(UIImage*)imageSource {
+    
+    CGImageRef imgRef = imageSource.CGImage;
+    
+    CGFloat width = CGImageGetWidth(imgRef);
+    CGFloat height = CGImageGetHeight(imgRef);
+    
+    CGRect bounds = CGRectMake(0,0,width,height);
+    
+    CGAffineTransform transform = CGAffineTransformIdentity;
+    UIImageOrientation orient = imageSource.imageOrientation;
+    CGSize imageSize = CGSizeMake(width,height);
+    
+    switch(imageSource.imageOrientation) {
+        case UIImageOrientationUp :
+            transform = CGAffineTransformIdentity;
+            break;
+        case UIImageOrientationUpMirrored :
+            transform = CGAffineTransformMakeTranslation(imageSize.width,0);
+            transform = CGAffineTransformScale(transform, -1, 1);
+            break;
+        case UIImageOrientationDown :
+            transform = CGAffineTransformMakeTranslation(imageSize.width,imageSize.height);
+            transform = CGAffineTransformRotate(transform, M_PI);
+            break;
+        case UIImageOrientationDownMirrored :
+            transform = CGAffineTransformMakeTranslation(imageSize.width,0);
+            transform = CGAffineTransformScale(transform, 1, -1);
+            break;
+        case UIImageOrientationLeft :
+            {
+                CGFloat storedHeight = bounds.size.height;
+                bounds.size.height = bounds.size.width;
+                bounds.size.width = storedHeight;
+                transform = CGAffineTransformMakeTranslation(0,imageSize.width);
+                transform = CGAffineTransformRotate(transform,3.0 * M_PI / 2.0);
+                break;
+            }
+        case UIImageOrientationLeftMirrored :
+            {
+                CGFloat storedHeight = bounds.size.height;
+                bounds.size.height = bounds.size.width;
+                bounds.size.width = storedHeight;
+                transform = CGAffineTransformMakeTranslation(imageSize.height,imageSize.width);
+                transform = CGAffineTransformScale(transform,-1,1);
+                transform = CGAffineTransformRotate(transform,3.0 * M_PI / 2.0);
+                break;
+            }
+        case UIImageOrientationRight :
+            {
+                CGFloat storedHeight = bounds.size.height;
+                bounds.size.height = bounds.size.width;
+                bounds.size.width = storedHeight;
+                transform = CGAffineTransformMakeTranslation(imageSize.height, 0);
+                transform = CGAffineTransformRotate(transform,M_PI / 2.0);
+                break;
+            }
+        case UIImageOrientationRightMirrored :
+            {
+                CGFloat storedHeight = bounds.size.height;
+                bounds.size.height = bounds.size.width;
+                bounds.size.width = storedHeight;
+                transform = CGAffineTransformMakeScale(-1,1);
+                transform = CGAffineTransformRotate(transform,M_PI / 2.0);
+                break;
+            }
+    }
+    
+    UIGraphicsBeginImageContext(bounds.size);
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    
+    if (orient == UIImageOrientationRight || orient == UIImageOrientationLeft) {
+        CGContextScaleCTM(context,-1,1);
+        CGContextTranslateCTM(context,-height,0);
+    } else {
+        CGContextScaleCTM(context,1,-1);
+        CGContextTranslateCTM(context,0, -height);
+    }
+    
+    CGContextConcatCTM(context,transform);
+    CGContextDrawImage(context,CGRectMake(0, 0, width, height),imgRef);
+    
+    UIImage* imageCopy = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    
+    return imageCopy;
 }
 -(NSArray<UIImage*>*)getImages {
     return self.internalImages;
@@ -136,6 +224,7 @@
     __block CGFloat size;
     [self.nodes enumerateObjectsUsingBlock:^(SKSpriteNode * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop){
         cgPath=CGPathCreateMutable();
+        __block CGPoint firstInPath;
         [path enumerateObjectsUsingBlock:^(PathElement * _Nonnull ele, NSUInteger idx, BOOL * _Nonnull stop) {
             CGPoint inSegment=[obj convertPoint:ele.point fromNode:all];
             inSegment.x+=self.s/2.0;
@@ -143,6 +232,7 @@
             inSegment.y*=-1;
             if(idx==0) {
                 CGPathMoveToPoint(cgPath, NULL, inSegment.x, inSegment.y);
+                firstInPath=inSegment;
             } else {
                 CGPathAddLineToPoint(cgPath,NULL,inSegment.x,inSegment.y);
             }
@@ -154,11 +244,15 @@
         [c setFill];
         [c setStroke];
         CGContextRef context = UIGraphicsGetCurrentContext();
-        CGContextAddPath(context, cgPath);
-        CGContextSetLineWidth(context, size);
-        CGContextSetLineJoin(context, kCGLineJoinRound);
-        CGContextSetLineCap(context, kCGLineCapRound);
-        CGContextStrokePath(context);
+        if(path.count>1) {
+            CGContextAddPath(context, cgPath);
+            CGContextSetLineWidth(context, size);
+            CGContextSetLineJoin(context, kCGLineJoinRound);
+            CGContextSetLineCap(context, kCGLineCapRound);
+            CGContextStrokePath(context);
+        } else if(path.count==1) {
+            CGContextFillEllipseInRect(context, CGRectMake(firstInPath.x-(size/2.0), firstInPath.y-(size/2.0), size, size));
+        }
         self.internalImages[idx]=UIGraphicsGetImageFromCurrentImageContext();
         obj.texture=[SKTexture textureWithImage:self.internalImages[idx]];
         UIGraphicsEndImageContext();

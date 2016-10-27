@@ -261,6 +261,8 @@
 -(void)reset {
     UIGraphicsBeginImageContext(CGSizeMake(self.finalized.imageWidth, self.finalized.imageHeight));
     self.finalized=[HighQualitySpriteNode newWithImage:UIGraphicsGetImageFromCurrentImageContext() segmentSize:SEGSIZE];
+    [self.finalizedDrawingContainer removeAllChildren];
+    [self.finalizedDrawingContainer addChild:self.finalized];
     UIGraphicsEndImageContext();
     [self.drawingContainer removeAllChildren];
 }
