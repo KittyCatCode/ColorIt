@@ -20,7 +20,6 @@
 @end
 @implementation HighQualitySpriteNode
 +(instancetype)newWithImage:(UIImage *)im segmentSize:(int)s {
-    im=[HighQualitySpriteNode rotateCameraImageToProperOrientation:im];
     HighQualitySpriteNode* ret = [self new];
     ret.s=s;
     NSMutableArray<UIImage*>* images = [NSMutableArray new];

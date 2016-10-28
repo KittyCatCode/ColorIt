@@ -230,8 +230,8 @@
 }
 -(void)setBg:(UIImage*)a {
     self.hasBeenModified=NO;
+    a=[self convertImageToGrayScale:[HighQualitySpriteNode rotateCameraImageToProperOrientation:a]];
     NSLog(@"%f,%f",a.size.width,a.size.height);
-    a=[self convertImageToGrayScale:a];
     if(!self.hasInit){[self createContents];self.hasInit=YES;}
     [self.drawingSteps removeAllObjects];
     [self.bgNodeContainer removeAllChildren];
