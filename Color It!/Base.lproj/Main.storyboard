@@ -71,13 +71,6 @@
                                             <action selector="save:" destination="BYZ-38-t0r" id="ArO-df-9zS"/>
                                         </connections>
                                     </barButtonItem>
-                                    <barButtonItem style="plain" systemItem="flexibleSpace" id="tmu-1c-zYU"/>
-                                    <barButtonItem title="No Color" id="nCA-RQ-uVl">
-                                        <color key="tintColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        <connections>
-                                            <action selector="noColor:" destination="BYZ-38-t0r" id="tmX-dJ-UpV"/>
-                                        </connections>
-                                    </barButtonItem>
                                     <barButtonItem style="plain" systemItem="flexibleSpace" id="Bhq-sl-ILP"/>
                                     <barButtonItem image="eraser.png" id="XT0-tf-qFO">
                                         <connections>
@@ -137,7 +130,6 @@
                         <outlet property="colorPicker" destination="tL8-HN-LA7" id="5Rt-9P-6zp"/>
                         <outlet property="drawingView" destination="Cks-2U-DZv" id="vbC-jd-4Vl"/>
                         <outlet property="hue" destination="Qgb-W9-KBu" id="YFb-ps-SP6"/>
-                        <outlet property="nocolor" destination="nCA-RQ-uVl" id="QxO-qe-kEu"/>
                         <outlet property="sat" destination="Xg5-4f-v8K" id="Jrk-CZ-MyX"/>
                         <outlet property="satSlider" destination="4OC-W5-vmr" id="YZd-fg-rD0"/>
                     </connections>

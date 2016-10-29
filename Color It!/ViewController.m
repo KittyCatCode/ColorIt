@@ -49,11 +49,6 @@
     }];
     [self presentViewController:share animated:YES completion:nil];
 }
-- (IBAction)noColor:(id)sender {
-    self.scene.dontDraw=(self.scene.dontDraw?NO:YES);
-    self.nocolor.tintColor=(self.scene.dontDraw?[UIColor greenColor]:[UIColor blackColor]);
-    self.nocolor.title=(self.scene.dontDraw?@"Color":@"No Color");
-}
 - (IBAction)eraser:(id)sender {
     self.satSlider.value=0;
     [self satValueChanged:nil];

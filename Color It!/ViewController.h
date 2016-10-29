@@ -21,6 +21,5 @@
 @property (weak, nonatomic) IBOutlet UISlider *brushSlider;
 @property (weak, nonatomic) IBOutlet ColorPicker *colorPicker;
 @property (weak, nonatomic) IBOutlet SKView *drawingView;
-@property (weak, nonatomic) IBOutlet UIBarButtonItem *nocolor;
 @end
 
