@@ -17,7 +17,6 @@
 		C04516951D7B16F400D968D0 /* Color_It_UITests.m in Sources */ = {isa = PBXBuildFile; fileRef = C04516941D7B16F400D968D0 /* Color_It_UITests.m */; };
 		C04516A41D7B1E5800D968D0 /* ColorPicker.m in Sources */ = {isa = PBXBuildFile; fileRef = C04516A31D7B1E5800D968D0 /* ColorPicker.m */; };
 		C04516AC1D7DD70700D968D0 /* cat-wallpaper-15.jpg in Resources */ = {isa = PBXBuildFile; fileRef = C04516AB1D7DD70600D968D0 /* cat-wallpaper-15.jpg */; };
-		C06182131D8ADF5100BED9DC /* TransformationView.xib in Resources */ = {isa = PBXBuildFile; fileRef = C06182121D8ADF5000BED9DC /* TransformationView.xib */; };
 		C09DB0351D9DB34800C79AF1 /* AQPhotoPicker.m in Sources */ = {isa = PBXBuildFile; fileRef = C09DB0331D9DB34800C79AF1 /* AQPhotoPicker.m */; };
 		C09DB0381D9DB53D00C79AF1 /* camera.png in Resources */ = {isa = PBXBuildFile; fileRef = C09DB0371D9DB53D00C79AF1 /* camera.png */; };
 		C09DB03A1D9DB54800C79AF1 /* camera@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C09DB0391D9DB54800C79AF1 /* camera@2x.png */; };
@@ -73,7 +72,6 @@
 		C04516A21D7B1E5800D968D0 /* ColorPicker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ColorPicker.h; sourceTree = "<group>"; };
 		C04516A31D7B1E5800D968D0 /* ColorPicker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ColorPicker.m; sourceTree = "<group>"; };
 		C04516AB1D7DD70600D968D0 /* cat-wallpaper-15.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "cat-wallpaper-15.jpg"; sourceTree = "<group>"; };
-		C06182121D8ADF5000BED9DC /* TransformationView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TransformationView.xib; sourceTree = "<group>"; };
 		C09DB0321D9DB34800C79AF1 /* AQPhotoPicker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AQPhotoPicker.h; sourceTree = "<group>"; };
 		C09DB0331D9DB34800C79AF1 /* AQPhotoPicker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AQPhotoPicker.m; sourceTree = "<group>"; };
 		C09DB0371D9DB53D00C79AF1 /* camera.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = camera.png; sourceTree = "<group>"; };
@@ -173,7 +171,6 @@
 				C04516A21D7B1E5800D968D0 /* ColorPicker.h */,
 				C04516A31D7B1E5800D968D0 /* ColorPicker.m */,
 				C04516881D7B16F400D968D0 /* Color It!Tests */,
-				C06182121D8ADF5000BED9DC /* TransformationView.xib */,
 				C0B547A81DAE83F000CD0510 /* HighQualitySpriteNode.h */,
 				C0B547A91DAE83F000CD0510 /* HighQualitySpriteNode.m */,
 				C04516931D7B16F400D968D0 /* Color It!UITests */,
@@ -324,7 +321,6 @@
 				C0CABD061D988B36004D64A2 /* clear@2x.png in Resources */,
 				C0CF61BB1DA8B08200840266 /* IMG_0002.JPG in Resources */,
 				C045167A1D7B16F300D968D0 /* Main.storyboard in Resources */,
-				C06182131D8ADF5100BED9DC /* TransformationView.xib in Resources */,
 				C09DB0461DA09D2F00C79AF1 /* empty.png in Resources */,
 				C0CABD041D988B2F004D64A2 /* clear.png in Resources */,
 				C09DB03A1D9DB54800C79AF1 /* camera@2x.png in Resources */,
